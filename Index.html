@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Microsoft Azure Portal</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Interactive high-fidelity replica of the Microsoft Azure Portal Admin Panel, designed with Fluent Design principles, live resource management, theme customization, and system monitoring dashboard.">
+  <meta name="author" content="Antigravity Team">
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="style.css">
+  <!-- Chart.js CDN for live-updating dashboard visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- Core App Grid Shell -->
+  <div class="app-container" id="appShell">
+    
+    <!-- ==========================================
+         TOP HEADER BAR
+         ========================================== -->
+    <header class="header-bar" id="headerBar">
+      <div class="header-left">
+        <!-- Hamburger Button to Collapse Side Menu -->
+        <button class="hamburger-btn" id="sidebarToggle" aria-label="Toggle Navigation Drawer">
+          <svg viewBox="0 0 20 20" width="18" height="18" fill="currentColor">
+            <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+          </svg>
+        </button>
+        <!-- Brand / Logo Link -->
+        <div class="logo-container" id="logoBrand" onclick="switchView('home')">
+          <!-- Microsoft Azure Isometric Polyhedral Logo -->
+          <svg viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19.1415 2.5H16.0354L10.3628 11.2301L14.7788 19.3496L19.1415 2.5Z" fill="#1182C5"/>
+            <path d="M16.0354 2.5H11.5973L3.8584 17.5221H8.28319L16.0354 2.5Z" fill="#0078D4"/>
+            <path d="M11.5973 15.0221L14.7788 19.3496H3.8584L11.5973 15.0221Z" fill="#50E6FF"/>
+            <path d="M19.1415 2.5L14.7788 19.3496L19.1504 20.5H22.5L19.1415 2.5Z" fill="#005A9E"/>
+          </svg>
+          <span class="brand-name">Microsoft Azure</span>
+        </div>
+      </div>
+
+      <!-- Center Dynamic Search Component -->
+      <div class="header-search-container">
+        <div class="search-wrapper">
+          <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+          </svg>
+          <input type="text" class="search-input" id="globalSearchInput" placeholder="Search resources, services, and docs (G+/)" aria-label="Global search input">
+          <span class="search-hotkey">/</span>
+        </div>
+        <!-- Search Autocomplete Results Panel -->
+        <div class="search-dropdown" id="searchDropdown">
+          <div class="search-group-title">Services</div>
+          <div class="search-item" onclick="handleSearchSelect('vm')">
+            <div class="search-item-icon">⚡</div>
+            <div class="search-item-info">
+              <span class="search-item-name">Virtual machines</span>
+              <span class="search-item-desc">Compute services</span>
+            </div>
+          </div>
+          <div class="search-item" onclick="handleSearchSelect('app')">
+            <div class="search-item-icon">🌐</div>
+            <div class="search-item-info">
+              <span class="search-item-name">App Services</span>
+              <span class="search-item-desc">Web application hosting</span>
+            </div>
+          </div>
+          <div class="search-item" onclick="handleSearchSelect('db')">
+            <div class="search-item-icon">🛢️</div>
+            <div class="search-item-info">
+              <span class="search-item-name">SQL databases</span>
+              <span class="search-item-desc">Managed SQL databases</span>
+            </div>
+          </div>
+          <div class="search-group-title">Recent Resources</div>
+          <div id="searchRecentContainer">
+            <!-- Populated via script.js -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Toolbar Utility Controls -->
+      <div class="header-right">
+        <!-- Cloud Shell Toggle -->
+        <button class="header-action-btn" id="cloudShellBtn" title="Cloud Shell" aria-label="Open Cloud Shell">
+          <svg viewBox="0 0 16 16">
+            <path d="M2.5 13.5h11v-1h-11v1zm1-4.5L6 6.5l-2.5-2.5-.7.7 1.8 1.8-1.8 1.8.7.7zm4.5-.5h5v-1h-5v1zm0-3h5v-1h-5v1z"/>
+          </svg>
+        </button>
+        <!-- Notifications Bell -->
+        <button class="header-action-btn" id="notificationsBtn" title="Notifications" aria-label="Open Notifications Panel">
+          <svg viewBox="0 0 16 16">
+            <path d="M8 16a2 2 0 002-2H6a2 2 0 002 2zm.93-13.25a2.5 2.5 0 00-1.86 0L4 4.5v3.3a4.52 4.52 0 01-.76 2.45L2.3 11.58A1 1 0 003.14 13h9.72a1 1 0 00.84-1.42l-.94-1.83a4.52 4.52 0 01-.76-2.45V4.5l-3.07-1.75z"/>
+          </svg>
+          <span class="notification-badge" id="notifBadge">0</span>
+        </button>
+        <!-- Portal Settings -->
+        <button class="header-action-btn" id="settingsBtn" title="Portal settings" aria-label="Open Portal Settings">
+          <svg viewBox="0 0 16 16">
+            <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 01-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.17.311c.58.988.004 2.236-.873 2.105l-.34-.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 01.872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.17a1.464 1.464 0 012.105.873l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 012.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.17-.311a1.464 1.464 0 01.873-2.105l.34.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 01-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.17a1.464 1.464 0 01-2.105-.873l-.1-.34zM8 10a2 2 0 110-4 2 2 0 010 4z"/>
+          </svg>
+        </button>
+        <!-- Support Help -->
+        <button class="header-action-btn" id="helpBtn" title="Help + support" aria-label="Help and support">
+          <svg viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 118 1a7 7 0 010 14zm0-1A6 6 0 108 2a6 6 0 000 12zm0-4a1 1 0 110-2 1 1 0 010 2zm1-5.75c0 .99-.6 1.62-1.21 2.24C7.22 7.07 7 7.55 7 8h1c0-.23.1-.47.6-.96C9.25 6.38 10 5.61 10 4.25 10 3.01 8.88 2 7.5 2 6.12 2 5.09 2.83 5.02 4h1.01c.07-.63.63-1.01 1.47-1.01 1.03 0 1.5.56 1.5 1.26z"/>
+          </svg>
+        </button>
+        
+        <!-- User Profile Avatar and Directory Details -->
+        <div class="profile-container" id="profileBtn" title="User accounts and profile info">
+          <div class="profile-avatar">JD</div>
+          <div class="profile-info">
+            <span class="profile-name">John Doe</span>
+            <span class="profile-tenant">Default Directory (Active)</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ==========================================
+         COLLAPSIBLE LEFT SIDEBAR
+         ========================================== -->
+    <nav class="sidebar-container" id="sidebarContainer">
+      <div class="sidebar-menu-wrapper">
+        
+        <!-- Main Quick Entry -->
+        <div class="menu-item active" id="menu-home" onclick="switchView('home')">
+          <div class="menu-item-icon">
+            <svg viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+          </div>
+          <span class="menu-item-label">Home</span>
+        </div>
+
+        <div class="menu-item" id="menu-dashboard" onclick="switchView('dashboard')">
+          <div class="menu-item-icon">
+            <svg viewBox="0 0 20 20"><path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"/><path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"/></svg>
+          </div>
+          <span class="menu-item-label">Dashboard</span>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <!-- Common Services -->
+        <div class="menu-item" id="menu-resources" onclick="switchView('resources')">
+          <div class="menu-item-icon">
+            <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clip-rule="evenodd"/></svg>
+          </div>
+          <span class="menu-item-label">All resources</span>
+        </div>
+
+        <div class="menu-item" onclick="openCreateBlade('Virtual Machine')">
+          <div class="menu-item-icon">
+            <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+          </div>
+          <span class="menu-item-label">Create a resource</span>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <!-- Azure Compute & Web -->
+        <div class="menu-item" onclick="switchView('resources', 'Virtual Machine')">
+          <div class="menu-item-icon">
+            <!-- Custom VM Icon representing computing core -->
+            <svg viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.53 2.112A1 1 0 0110.34 18H9.66a1 1 0 01-.97-1.388L9.22 15H7a2 2 0 01-2-2V5zm2 7v1a1 1 0 001 1h8a1 1 0 001-1v-1H5zm10-2V5H5v5h10z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <span class="menu-item-label">Virtual machines</span>
+        </div>
+
+        <div class="menu-item" onclick="switchView('resources', 'App Service')">
+          <div class="menu-item-icon">
+            <!-- App Services globe & network -->
+            <svg viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4.083 9h1.946c.08-1.543.526-2.958 1.242-4.145A8.001 8.001 0 004.083 9zM10 2a8 8 0 100 16 8 8 0 000-16zm1.09 11.455c.717-1.187 1.162-2.602 1.242-4.145h1.946a8.003 8.003 0 01-3.187 4.145zM8.91 13.455c-.717-1.187-1.162-2.602-1.242-4.145H5.722a8.003 8.003 0 003.187 4.145zM5.722 7h1.946c.08 1.543.526 2.958 1.242 4.145A8.003 8.003 0 015.722 7zm3.187-2.855c-.717 1.187-1.162 2.602-1.242 4.145h3.187c-.08-1.543-.526-2.958-1.242-4.145zM12.278 7c-.08 1.543-.526 2.958-1.242 4.145a8.001 8.001 0 003.187-4.145H12.278z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <span class="menu-item-label">App Services</span>
+        </div>
+
+        <div class="menu-item" onclick="switchView('resources', 'SQL Database')">
+          <div class="menu-item-icon">
+            <!-- Database barrel -->
+            <svg viewBox="0 0 20 20" fill="currentColor">
+              <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z" />
+              <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z" />
+              <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z" />
+            </svg>
+          </div>
+          <span class="menu-item-label">SQL databases</span>
+        </div>
+
+        <div class="menu-item" onclick="switchView('resources', 'Storage Account')">
+          <div class="menu-item-icon">
+            <!-- Storage stack -->
+            <svg viewBox="0 0 20 20" fill="currentColor">
+              <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
+            </svg>
+          </div>
+          <span class="menu-item-label">Storage accounts</span>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <!-- Governance & Directory -->
+        <div class="menu-item" onclick="openModalMessage('Microsoft Entra ID', 'Open identity governance system')">
+          <div class="menu-item-icon">
+            <!-- Entra user/shield -->
+            <svg viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M2.166 4.9L10 1.154 17.834 4.9A1 1 0 0118.5 5.82v5.18c0 5.617-4.48 9.324-8.156 10.884a.82.82 0 01-.688 0C5.979 20.324 1.5 16.617 1.5 11V5.82a1 1 0 01.666-.92zM10 3.327L3 6.634v4.366c0 4.606 3.6 7.608 7 9 3.4-1.392 7-4.394 7-9V6.634l-7-3.307zM10 6a2.5 2.5 0 100 5 2.5 2.5 0 000-5zM6.5 13.5a3.5 3.5 0 017 0 .5.5 0 01-.5.5h-6a.5.5 0 01-.5-.5z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <span class="menu-item-label">Microsoft Entra ID</span>
+        </div>
+
+        <div class="menu-item" onclick="switchView('dashboard')">
+          <div class="menu-item-icon">
+            <!-- Azure Monitor graph -->
+            <svg viewBox="0 0 20 20" fill="currentColor">
+              <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+            </svg>
+          </div>
+          <span class="menu-item-label">Monitor</span>
+        </div>
+
+        <div class="menu-item" onclick="openModalMessage('Cost Management', 'Review billing, budget thresholds, and advisor optimizations.')">
+          <div class="menu-item-icon">
+            <!-- Advisor/billing lightbulb -->
+            <svg viewBox="0 0 20 20" fill="currentColor">
+              <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 100-2h-1a1 1 0 100 2h1zM5.05 6.464a1 1 0 101.414-1.414l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 10-2 0v1a1 1 0 102 0v-1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14H8a5 5 0 019.162-2.748L12 14z" />
+            </svg>
+          </div>
+          <span class="menu-item-label">Cost Management</span>
+        </div>
+
+      </div>
+    </nav>
+
+    <!-- ==========================================
+         MAIN CONTENT AND ROUTER
+         ========================================== -->
+    <main class="main-wrapper" id="mainWrapper">
+      <!-- Breadcrumb indicator -->
+      <div class="breadcrumb-container">
+        <span class="breadcrumb-item" onclick="switchView('home')">Azure Home</span>
+        <span class="breadcrumb-item active" id="breadcrumbActiveItem">Services</span>
+      </div>
+
+      <!-- ------------------------------------------
+           VIEW 1: AZURE HOME PANEL (Default)
+           ------------------------------------------ -->
+      <section class="view-content active" id="view-home">
+        <!-- Dashboard Greeting Banner -->
+        <div class="azure-banner">
+          <div class="banner-content">
+            <h1>Welcome to Microsoft Azure</h1>
+            <p>Deploy virtual machines, secure directories, orchestrate cloud database services, and construct complex web ecosystems. Use this high-density console to control all elements of your cloud footprint.</p>
+          </div>
+          <!-- Background SVG graphic mimicking network topology -->
+          <svg class="banner-bg-graphics" viewBox="0 0 100 100">
+            <circle cx="20" cy="20" r="3" fill="#fff"/>
+            <circle cx="80" cy="30" r="4" fill="#fff"/>
+            <circle cx="50" cy="70" r="5" fill="#fff"/>
+            <line x1="20" y1="20" x2="80" y2="30" stroke="#fff" stroke-width="0.5"/>
+            <line x1="80" y1="30" x2="50" y2="70" stroke="#fff" stroke-width="0.5"/>
+            <line x1="20" y1="20" x2="50" y2="70" stroke="#fff" stroke-width="0.5"/>
+          </svg>
+        </div>
+
+        <!-- Azure Services Quick Links Grid -->
+        <h2 class="section-title">
+          <svg viewBox="0 0 20 20"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"/></svg>
+          Azure services
+        </h2>
+        <div class="services-grid">
+          <div class="service-card" onclick="openCreateBlade('Virtual Machine')">
+            <div class="service-icon">🖥️</div>
+            <span class="service-name">Create VM</span>
+          </div>
+          <div class="service-card" onclick="switchView('resources', 'Virtual Machine')">
+            <div class="service-icon">⚡</div>
+            <span class="service-name">Virtual machines</span>
+          </div>
+          <div class="service-card" onclick="switchView('resources', 'App Service')">
+            <div class="service-icon">🌐</div>
+            <span class="service-name">App Services</span>
+          </div>
+          <div class="service-card" onclick="switchView('resources', 'SQL Database')">
+            <div class="service-icon">🛢️</div>
+            <span class="service-name">SQL databases</span>
+          </div>
+          <div class="service-card" onclick="switchView('resources', 'Storage Account')">
+            <div class="service-icon">📦</div>
+            <span class="service-name">Storage accounts</span>
+          </div>
+          <div class="service-card" onclick="openModalMessage('Resource Groups', 'Open Resource Groups manager. Designate specific security and billing buckets for your products.')">
+            <div class="service-icon">📁</div>
+            <span class="service-name">Resource groups</span>
+          </div>
+          <div class="service-card" onclick="switchView('resources')">
+            <div class="service-icon">📋</div>
+            <span class="service-name">All resources</span>
+          </div>
+          <div class="service-card" onclick="openBlade('settingsBlade')">
+            <div class="service-icon">⚙️</div>
+            <span class="service-name">Portal Settings</span>
+          </div>
+        </div>
+
+        <!-- Recent Resources Component -->
+        <div class="recent-resources-container">
+          <div class="card-header">
+            <span class="card-header-title">Recent resources</span>
+            <button class="btn-azure-secondary" onclick="switchView('resources')">See all</button>
+          </div>
+          <div class="azure-table-wrapper">
+            <table class="azure-table" id="recentResourcesTable">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Resource group</th>
+                  <th>Status</th>
+                  <th>Subscription</th>
+                  <th>Location</th>
+                </tr>
+              </thead>
+              <tbody id="recentResourcesBody">
+                <!-- Dynamically populated in script.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ------------------------------------------
+           VIEW 2: GRID MONITORING DASHBOARD
+           ------------------------------------------ -->
+      <section class="view-content" id="view-dashboard">
+        <div class="dashboard-actions-bar">
+          <div class="dashboard-actions-left">
+            <h2 style="font-size:15px; font-weight:600; margin:0;">Active Operational Dashboard</h2>
+            <span style="font-size: 11px; color: var(--text-secondary);">| Sub: Pay-As-You-Go</span>
+          </div>
+          <div class="dashboard-actions-right" style="display:flex; gap:8px;">
+            <button class="btn-azure" onclick="openCreateBlade('Virtual Machine')">➕ Add Widget</button>
+            <button class="btn-azure-secondary" onclick="refreshDashboard()"><span style="margin-right:2px;">🔄</span> Refresh</button>
+            <button class="btn-azure-secondary" onclick="openBlade('settingsBlade')">⚙️ Theme Customizer</button>
+          </div>
+        </div>
+
+        <!-- Dashboard Multi-Col Widgets -->
+        <div class="dashboard-grid">
+          
+          <!-- CPU utilization chart widget -->
+          <div class="widget col-8">
+            <div class="widget-header">
+              <span class="widget-title">Compute Cluster - Average CPU Utilization (%)</span>
+              <span style="font-size:10px; color:var(--color-success);">🟢 Live Updating</span>
+            </div>
+            <div class="widget-body">
+              <div class="chart-canvas-container">
+                <canvas id="cpuChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Metrics Stat Card -->
+          <div class="widget col-4">
+            <div class="widget-header">
+              <span class="widget-title">Monthly Estimated Costs</span>
+              <span>💰</span>
+            </div>
+            <div class="widget-body">
+              <div class="metric-layout">
+                <div class="metric-value" id="billingValue">$184.22</div>
+                <div class="metric-unit">USD (Accumulated)</div>
+                <div class="metric-subtitle">Budget Threshold: $500.00</div>
+                <div style="width: 100%; height: 6px; background-color: var(--border-color); border-radius: 3px; overflow: hidden; margin-top: 8px;">
+                  <div id="costProgressBar" style="width: 36.8%; height: 100%; background-color: var(--primary-color);"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Service Health widget -->
+          <div class="widget col-4">
+            <div class="widget-header">
+              <span class="widget-title">Service Health By Region</span>
+              <span>🏥</span>
+            </div>
+            <div class="widget-body" style="align-items:flex-start;">
+              <div class="health-status-list">
+                <div class="health-status-item">
+                  <span class="health-region">East US</span>
+                  <span class="status-badge running"><span class="status-badge-dot"></span>Healthy</span>
+                </div>
+                <div class="health-status-item">
+                  <span class="health-region">West Europe</span>
+                  <span class="status-badge running"><span class="status-badge-dot"></span>Healthy</span>
+                </div>
+                <div class="health-status-item">
+                  <span class="health-region">Southeast Asia</span>
+                  <span class="status-badge updating"><span class="status-badge-dot"></span>Warning</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Network throughput widget -->
+          <div class="widget col-8">
+            <div class="widget-header">
+              <span class="widget-title">Network Ingress/Egress Throughput</span>
+              <span>📶</span>
+            </div>
+            <div class="widget-body">
+              <div class="chart-canvas-container">
+                <canvas id="networkChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ------------------------------------------
+           VIEW 3: RESOURCES EXPLORER / LIST
+           ------------------------------------------ -->
+      <section class="view-content" id="view-resources">
+        <div class="dashboard-actions-bar">
+          <div class="dashboard-actions-left" style="gap:16px;">
+            <h2 style="font-size:15px; font-weight:600; margin:0;" id="resourceListTitle">All resources</h2>
+            <!-- Inline filters -->
+            <input type="text" class="form-control" id="resourceFilterInput" placeholder="Filter by name..." style="width: 220px; height: 28px;">
+            <select class="form-control" id="resourceTypeFilter" style="width: 160px; height: 28px; padding: 0 4px;">
+              <option value="All">All Types</option>
+              <option value="Virtual Machine">Virtual machines</option>
+              <option value="App Service">App Services</option>
+              <option value="SQL Database">SQL databases</option>
+              <option value="Storage Account">Storage accounts</option>
+            </select>
+          </div>
+          <div class="dashboard-actions-right">
+            <button class="btn-azure" onclick="openCreateBlade('Virtual Machine')">➕ Create Resource</button>
+          </div>
+        </div>
+
+        <!-- Resources Datagrid -->
+        <div class="recent-resources-container">
+          <div class="azure-table-wrapper">
+            <table class="azure-table" id="allResourcesTable">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Resource group</th>
+                  <th>Status</th>
+                  <th>Subscription</th>
+                  <th>Location</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="allResourcesBody">
+                <!-- Dynamically populated via script.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ==========================================
+         SLIDE-IN BLADES (DRAWERS)
+         ========================================== -->
+    
+    <!-- Transparent Background Overlay -->
+    <div class="blade-overlay" id="bladeOverlay" onclick="closeAllBlades()"></div>
+
+    <!-- BLADE A: RESOURCE CREATION WIZARD -->
+    <div class="blade" id="createResourceBlade" role="dialog" aria-labelledby="createBladeTitle">
+      <div class="blade-header">
+        <div class="blade-title-container">
+          <span class="blade-title" id="createBladeTitle">Create a Resource</span>
+          <span class="blade-subtitle">Deploy a new instance into your Cloud Subscription</span>
+        </div>
+        <button class="blade-close-btn" onclick="closeBlade('createResourceBlade')" aria-label="Close panel">
+          <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </button>
+      </div>
+      <div class="blade-content">
+        <form id="createResourceForm" onsubmit="handleResourceSubmit(event)">
+          
+          <div class="form-group">
+            <label class="form-label" for="newResourceType">Resource Type</label>
+            <select class="form-control form-control-select" id="newResourceType" required onchange="onResourceTypeChange()">
+              <option value="Virtual Machine">🖥️ Virtual machine</option>
+              <option value="App Service">🌐 App Service</option>
+              <option value="SQL Database">🛢️ SQL database</option>
+              <option value="Storage Account">📦 Storage account</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="newResourceName">Resource Name</label>
+            <input type="text" class="form-control" id="newResourceName" placeholder="e.g. prod-web-vm" pattern="[a-zA-Z0-9-]{3,24}" title="3 to 24 alphanumeric characters or hyphens" required>
+            <div class="form-helper">Name must be globally unique and contain only numbers, letters, and hyphens.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="newResourceGroup">Resource Group</label>
+            <select class="form-control form-control-select" id="newResourceGroup" required>
+              <option value="production-rg">production-rg</option>
+              <option value="testing-rg">testing-rg</option>
+              <option value="shared-infra-rg">shared-infra-rg</option>
+            </select>
+            <div class="form-helper">Organize elements into billing & logical compartments.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="newResourceLocation">Region / Location</label>
+            <select class="form-control form-control-select" id="newResourceLocation" required>
+              <option value="East US">East US</option>
+              <option value="West Europe">West Europe</option>
+              <option value="Southeast Asia">Southeast Asia</option>
+              <option value="Central India">Central India</option>
+            </select>
+          </div>
+
+          <!-- Dynamic contextual parameters based on type -->
+          <div id="vmSpecificFields">
+            <div class="form-group">
+              <label class="form-label" for="vmSize">Instance Size</label>
+              <select class="form-control form-control-select" id="vmSize">
+                <option value="Standard B2s (2 vCPUs, 4GB RAM) - $15.22/mo">Standard B2s (2 vCPUs, 4GB RAM) - $15.22/mo</option>
+                <option value="Standard D2s v3 (2 vCPUs, 8GB RAM) - $72.10/mo">Standard D2s v3 (2 vCPUs, 8GB RAM) - $72.10/mo</option>
+                <option value="Standard F4s (4 vCPUs, 8GB RAM) - $122.40/mo">Standard F4s (4 vCPUs, 8GB RAM) - $122.40/mo</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="vmOs">Operating System Image</label>
+              <select class="form-control form-control-select" id="vmOs">
+                <option value="Ubuntu Server 22.04 LTS">Ubuntu Server 22.04 LTS</option>
+                <option value="Windows Server 2022 Datacenter">Windows Server 2022 Datacenter</option>
+                <option value="Debian 11 Bullseye">Debian 11 Bullseye</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="appSpecificFields" style="display:none;">
+            <div class="form-group">
+              <label class="form-label" for="appRuntime">Runtime Stack</label>
+              <select class="form-control form-control-select" id="appRuntime">
+                <option value="Node.js 18 LTS">Node.js 18 LTS</option>
+                <option value="Python 3.10">Python 3.10</option>
+                <option value="ASP.NET Core 7.0">ASP.NET Core 7.0</option>
+              </select>
+            </div>
+          </div>
+
+        </form>
+      </div>
+      <div class="blade-footer">
+        <button class="btn-azure" type="submit" form="createResourceForm">Review + Create</button>
+        <button class="btn-azure-secondary" onclick="closeBlade('createResourceBlade')">Cancel</button>
+      </div>
+    </div>
+
+    <!-- BLADE B: RESOURCE OPERATIONAL DETAILS -->
+    <div class="blade" id="detailsResourceBlade" role="dialog" aria-labelledby="detailsBladeTitle">
+      <div class="blade-header">
+        <div class="blade-title-container">
+          <span class="blade-title" id="detailsBladeTitle">Resource Properties</span>
+          <span class="blade-subtitle" id="detailsBladeSubtitle">Manage active status and commands</span>
+        </div>
+        <button class="blade-close-btn" onclick="closeBlade('detailsResourceBlade')" aria-label="Close panel">
+          <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </button>
+      </div>
+      <div class="blade-content">
+        <!-- Resource Control Toolbar Buttons -->
+        <div class="dashboard-actions-bar" style="margin-bottom: 20px; padding: 6px 12px; gap:6px; flex-wrap:wrap;">
+          <button class="btn-azure-secondary" id="controlStartBtn" onclick="triggerResourceCommand('start')">▶️ Start</button>
+          <button class="btn-azure-secondary" id="controlStopBtn" onclick="triggerResourceCommand('stop')">⏹️ Stop</button>
+          <button class="btn-azure-secondary" id="controlRestartBtn" onclick="triggerResourceCommand('restart')">🔄 Restart</button>
+          <button class="btn-azure-danger" id="controlDeleteBtn" onclick="triggerResourceCommand('delete')" style="margin-left:auto;">🗑️ Delete</button>
+        </div>
+
+        <h3 style="font-size:12px; font-weight:600; text-transform:uppercase; color:var(--text-secondary); margin-bottom:12px; letter-spacing:0.5px;">Essentials</h3>
+        
+        <!-- Essentials Grid Table Info -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px;">
+          <div>
+            <span style="font-size:10px; color:var(--text-muted); display:block;">Resource Name</span>
+            <span style="font-weight:600;" id="detName">-</span>
+          </div>
+          <div>
+            <span style="font-size:10px; color:var(--text-muted); display:block;">Type</span>
+            <span id="detType">-</span>
+          </div>
+          <div>
+            <span style="font-size:10px; color:var(--text-muted); display:block;">Resource Group</span>
+            <span id="detGroup">-</span>
+          </div>
+          <div>
+            <span style="font-size:10px; color:var(--text-muted); display:block;">Status</span>
+            <span id="detStatus">-</span>
+          </div>
+          <div>
+            <span style="font-size:10px; color:var(--text-muted); display:block;">Location</span>
+            <span id="detLocation">-</span>
+          </div>
+          <div>
+            <span style="font-size:10px; color:var(--text-muted); display:block;">Subscription ID</span>
+            <span style="font-family:monospace; font-size:11px;" id="detSubId">Pay-As-You-Go</span>
+          </div>
+        </div>
+
+        <!-- Contextual Extra Info Box -->
+        <div style="background-color:var(--hover-bg); border:1px solid var(--border-color); border-radius:var(--border-radius); padding:16px; margin-bottom:20px;">
+          <h4 style="font-size:12px; font-weight:600; margin-bottom:8px;" id="detContextTitle">Instance Configurations</h4>
+          <p style="font-size:11px; color:var(--text-secondary);" id="detContextDesc">-</p>
+        </div>
+
+        <!-- Mini performance monitoring metric inside resource blade -->
+        <h3 style="font-size:12px; font-weight:600; text-transform:uppercase; color:var(--text-secondary); margin-bottom:12px; letter-spacing:0.5px;">Activity Performance (Past Hour)</h3>
+        <div style="width:100%; height:180px; border:1px solid var(--border-color); border-radius:var(--border-radius); padding:10px; background-color:var(--card-bg);">
+          <canvas id="bladeMetricChart"></canvas>
+        </div>
+
+      </div>
+      <div class="blade-footer">
+        <button class="btn-azure-secondary" onclick="closeBlade('detailsResourceBlade')">Close Panel</button>
+      </div>
+    </div>
+
+    <!-- BLADE C: PORTAL SETTINGS & THEME TOGGLE -->
+    <div class="blade" id="settingsBlade" role="dialog" aria-labelledby="settingsBladeTitle">
+      <div class="blade-header">
+        <div class="blade-title-container">
+          <span class="blade-title" id="settingsBladeTitle">Portal settings</span>
+          <span class="blade-subtitle">Customize layouts, dashboard styling, and high contrast</span>
+        </div>
+        <button class="blade-close-btn" onclick="closeBlade('settingsBlade')" aria-label="Close settings">
+          <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </button>
+      </div>
+      <div class="blade-content">
+        
+        <h3 style="font-size:12.5px; font-weight:600; margin-bottom:6px;">Select Theme Color</h3>
+        <p style="font-size:11px; color:var(--text-secondary); margin-bottom:16px;">Pick a palette aligned with Microsoft's cloud UI. Changes apply dynamically without refreshing.</p>
+
+        <!-- Theme Picker Grid -->
+        <div class="theme-selector-grid">
+          <div class="theme-option theme-opt-light active" id="theme-opt-light" onclick="setPortalTheme('light')">
+            <div class="theme-preview-box">
+              <div class="theme-preview-header"></div>
+              <div class="theme-preview-body"></div>
+            </div>
+            <span class="theme-name">Azure Light</span>
+          </div>
+
+          <div class="theme-option theme-opt-dark" id="theme-opt-dark" onclick="setPortalTheme('dark')">
+            <div class="theme-preview-box">
+              <div class="theme-preview-header"></div>
+              <div class="theme-preview-body"></div>
+            </div>
+            <span class="theme-name">Azure Dark</span>
+          </div>
+
+          <div class="theme-option theme-opt-blue-dark" id="theme-opt-blue-dark" onclick="setPortalTheme('blue-dark')">
+            <div class="theme-preview-box">
+              <div class="theme-preview-header"></div>
+              <div class="theme-preview-body"></div>
+            </div>
+            <span class="theme-name">Azure Blue</span>
+          </div>
+        </div>
+
+        <div class="sidebar-divider" style="margin: 24px 0;"></div>
+
+        <!-- Layout density and toggles -->
+        <h3 style="font-size:12.5px; font-weight:600; margin-bottom:6px;">Sidebar Menu State</h3>
+        <div class="form-group" style="margin-top: 12px;">
+          <label style="display:flex; align-items:center; gap:8px; font-weight:500; cursor:pointer;">
+            <input type="checkbox" id="settingsDockSidebar" checked onchange="toggleSidebarDock(this.checked)" style="width:16px; height:16px;">
+            <span>Docked mode (Keep sidebar expanded by default)</span>
+          </label>
+        </div>
+
+        <div class="sidebar-divider" style="margin: 24px 0;"></div>
+
+        <h3 style="font-size:12.5px; font-weight:600; margin-bottom:6px;">Account details</h3>
+        <div style="background-color: var(--hover-bg); padding:12px; border-radius: var(--border-radius); font-size:11.5px; border:1px solid var(--border-color);">
+          <strong>Directory:</strong> default-tenant-id-8871<br>
+          <strong>Role:</strong> Global Administrator / Subscription Owner<br>
+          <strong>API Version:</strong> 2026-05-24-hybrid
+        </div>
+
+      </div>
+      <div class="blade-footer">
+        <button class="btn-azure" onclick="closeBlade('settingsBlade')">Apply Settings</button>
+      </div>
+    </div>
+
+    <!-- BLADE D: NOTIFICATIONS CENTER -->
+    <div class="blade" id="notificationsBlade" role="dialog" aria-labelledby="notifBladeTitle">
+      <div class="blade-header">
+        <div class="blade-title-container">
+          <span class="blade-title" id="notifBladeTitle">Notifications center</span>
+          <span class="blade-subtitle">Live events log for resource state changes</span>
+        </div>
+        <button class="blade-close-btn" onclick="closeBlade('notificationsBlade')" aria-label="Close notifications">
+          <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </button>
+      </div>
+      <div class="blade-content" style="padding:0;" id="notificationsContentList">
+        <!-- Populated via script.js -->
+        <div style="padding:40px; text-align:center; color:var(--text-muted);">
+          <span>📭</span>
+          <p style="margin-top:8px; font-size:12px;">No notification events registered yet.</p>
+        </div>
+      </div>
+      <div class="blade-footer">
+        <button class="btn-azure-secondary" onclick="clearAllNotifications()">Clear All Logs</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Dynamic Global Message Box / Dialog Modal -->
+  <div style="position:fixed; top:0; left:0; width:100vw; height:100vh; background-color:rgba(0,0,0,0.5); z-index:200; display:none; align-items:center; justify-content:center;" id="modalDialogShell">
+    <div style="background-color:var(--card-bg); width:400px; padding:24px; border-radius:var(--border-radius); border:1px solid var(--border-color); box-shadow:var(--shadow-lg);">
+      <h3 style="font-size:15px; font-weight:600; margin-bottom:8px; display:flex; align-items:center; gap:8px;" id="modalTitle">Security Alert</h3>
+      <p style="font-size:12.5px; color:var(--text-secondary); line-height:1.4; margin-bottom:20px;" id="modalBody">Operational parameter requires authorization permissions.</p>
+      <div style="display:flex; justify-content:flex-end;">
+        <button class="btn-azure" onclick="closeModalDialog()">Acknowledge</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Shell -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Script Engine -->
+  <script src="script.js"></script>
+</body>
+</html>
